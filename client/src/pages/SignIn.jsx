@@ -2,11 +2,20 @@ import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { IoWarning } from "react-icons/io5";
 import { AiOutlineLoading3Quarters } from "react-icons/ai";
+import { useDispatch, useSelector } from "react-redux";
+
+import {
+	signInStart,
+	signInSuccess,
+	signInFailure,
+} from "../redux/user/userSlice";
 
 export const SignIn = () => {
 	const [formData, setFormData] = useState({});
-	const [isLoading, setIsLoading] = useState(false);
-	const [errorMessage, setErrorMessage] = useState(null);
+	const dispatch = useDispatch();
+	const { loading: isLoading, error: errorMessage } = useSelector(
+		(state) => state.user
+	);
 
 	const navigate = useNavigate();
 
@@ -18,11 +27,10 @@ export const SignIn = () => {
 		e.preventDefault();
 
 		if (!formData.email || !formData.password)
-			return setErrorMessage("Please fill out all fields");
+			return dispatch(signInFailure("Please fill out all the fields"));
 
 		try {
-			setIsLoading(true);
-			setErrorMessage(null);
+			dispatch(signInStart());
 
 			const res = await fetch("/api/auth/signin", {
 				method: "POST",
@@ -35,14 +43,15 @@ export const SignIn = () => {
 			const data = await res.json();
 
 			if (data.success === false) {
-				setErrorMessage(data.message);
+				dispatch(signInFailure(data.message));
 			}
 
-			if (res.ok) navigate("/");
+			if (res.ok) {
+				dispatch(signInSuccess(data));
+				navigate("/");
+			}
 		} catch (error) {
-			setErrorMessage(error.message);
-		} finally {
-			setIsLoading(false);
+			dispatch(signInFailure(error.message));
 		}
 	};
 
@@ -111,7 +120,9 @@ export const SignIn = () => {
 					</form>
 
 					<div className="flex gap-2 text-sm mt-5">
-						<span className="text-zinc-500">Don&apos;t have an account yet?</span>
+						<span className="text-zinc-500">
+							Don&apos;t have an account yet?
+						</span>
 						<Link to="/sign-up" className="underline">
 							Sign Up
 						</Link>

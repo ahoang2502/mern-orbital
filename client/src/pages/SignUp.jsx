@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { IoWarning } from "react-icons/io5";
 import { AiOutlineLoading3Quarters } from "react-icons/ai";
+import { GoogleButton } from "../components/GoogleButton";
 
 export const SignUp = () => {
 	const [formData, setFormData] = useState({});
@@ -124,6 +125,8 @@ export const SignUp = () => {
 								"Sign Up"
 							)}
 						</button>
+
+						<GoogleButton />
 					</form>
 
 					<div className="flex gap-2 text-sm mt-5">

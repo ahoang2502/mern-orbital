@@ -9,6 +9,7 @@ import {
 	signInSuccess,
 	signInFailure,
 } from "../redux/user/userSlice";
+import { GoogleButton } from "../components/GoogleButton";
 
 export const SignIn = () => {
 	const [formData, setFormData] = useState({});
@@ -117,6 +118,8 @@ export const SignIn = () => {
 								"Sign In"
 							)}
 						</button>
+
+						<GoogleButton />
 					</form>
 
 					<div className="flex gap-2 text-sm mt-5">

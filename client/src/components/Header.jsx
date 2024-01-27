@@ -8,14 +8,19 @@ import {
 	TextInput,
 } from "flowbite-react";
 import { AiOutlineSearch } from "react-icons/ai";
-import { FaMoon } from "react-icons/fa";
+import { FaMoon, FaSun } from "react-icons/fa";
 import { IoLogOutOutline } from "react-icons/io5";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import { Link, useLocation } from "react-router-dom";
+
+import { toggleTheme } from "../redux/theme/themeSlice";
 
 export const Header = () => {
 	const path = useLocation().pathname;
+
+	const dispatch = useDispatch();
 	const { currentUser } = useSelector((state) => state.user);
+	const { theme } = useSelector((state) => state.theme);
 
 	return (
 		<Navbar className="border-b-2">
@@ -36,13 +41,20 @@ export const Header = () => {
 				/>
 			</form>
 
-			<button className="p-2 rounded-full border border-zinc-300 hidden sm:flex items-center justify-center hover:bg-zinc-100">
+			<button className="p-2 rounded-full border border-zinc-300 hidden sm:flex items-center justify-center hover:bg-zinc-100 dark:hover:bg-slate-700">
 				<AiOutlineSearch size={13} />
 			</button>
 
 			<div className="flex gap-2 md:order-2 items-center">
-				<button className="p-2 rounded-full border border-zinc-300 hidden sm:flex items-center justify-center hover:bg-zinc-100">
-					<FaMoon size={13} color="#1e293b" />
+				<button
+					className="p-2 rounded-full border border-zinc-300 hidden sm:flex items-center justify-center hover:bg-zinc-100 dark:hover:bg-slate-700"
+					onClick={() => dispatch(toggleTheme())}
+				>
+					{theme === "dark" ? (
+						<FaSun size={13} color="#f8fafc" />
+					) : (
+						<FaMoon size={13} color="#1e293b" />
+					)}
 				</button>
 
 				{currentUser ? (

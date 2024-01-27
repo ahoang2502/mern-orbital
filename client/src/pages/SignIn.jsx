@@ -1,15 +1,15 @@
 import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
-import { IoWarning } from "react-icons/io5";
 import { AiOutlineLoading3Quarters } from "react-icons/ai";
 import { useDispatch, useSelector } from "react-redux";
+import { Link, useNavigate } from "react-router-dom";
 
+import { Error } from "../components/Error";
+import { GoogleButton } from "../components/GoogleButton";
 import {
+	signInFailure,
 	signInStart,
 	signInSuccess,
-	signInFailure,
 } from "../redux/user/userSlice";
-import { GoogleButton } from "../components/GoogleButton";
 
 export const SignIn = () => {
 	const [formData, setFormData] = useState({});
@@ -131,14 +131,7 @@ export const SignIn = () => {
 						</Link>
 					</div>
 
-					{errorMessage && (
-						<div className="mt-5 flex items-center gap-2 p-2 bg-rose-50 border border-rose-200 rounded-sm">
-							<IoWarning className="text-rose-500" />
-							<p className="text-rose-500 text-sm font-medium">
-								{errorMessage}
-							</p>
-						</div>
-					)}
+					{errorMessage && <Error error={errorMessage} />}
 				</div>
 			</div>
 		</div>

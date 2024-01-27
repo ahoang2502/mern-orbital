@@ -8,7 +8,7 @@ import { SignUp } from "./pages/SignUp";
 import { Blogs } from "./pages/Blogs";
 import { Header } from "./components/Header";
 import { Footer } from "./components/Footer";
-import { PrivateRoute } from "./components/PrivateRoute";
+import { PrivateRoute } from "./components/dashboard/PrivateRoute";
 
 const App = () => {
 	return (

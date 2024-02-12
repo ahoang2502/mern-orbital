@@ -4,9 +4,10 @@ import {
 	ref,
 	uploadBytesResumable,
 } from "firebase/storage";
-import { TextInput } from "flowbite-react";
+import { Modal, TextInput } from "flowbite-react";
 import { useEffect, useRef, useState } from "react";
 import { IoLogOutOutline } from "react-icons/io5";
+import { HiOutlineExclamation } from "react-icons/hi";
 import { useSelector, useDispatch } from "react-redux";
 import { CircularProgressbar } from "react-circular-progressbar";
 import "react-circular-progressbar/dist/styles.css";
@@ -18,6 +19,9 @@ import {
 	updateFailure,
 	updateStart,
 	updateSuccess,
+	deleteUserFailure,
+	deleteUserStart,
+	deleteUserSuccess,
 } from "../../redux/user/userSlice";
 
 export const DashProfile = () => {
@@ -28,13 +32,14 @@ export const DashProfile = () => {
 	const [imageFileUploadError, setImageFileUploadError] = useState(null);
 	const [imageFileUploading, setImageFileUploading] = useState(false);
 	const [updateUserError, setUpdateUserError] = useState(null);
-
 	const [formData, setFormData] = useState({});
+
+	const [showModal, setShowModal] = useState(false);
 
 	const filePickerRef = useRef();
 
 	const dispatch = useDispatch();
-	const { currentUser } = useSelector((state) => state.user);
+	const { currentUser, error } = useSelector((state) => state.user);
 
 	const handleImageChange = (e) => {
 		const file = e.target.files[0];
@@ -135,6 +140,24 @@ export const DashProfile = () => {
 		}
 	};
 
+	const handleDeleteUser = async () => {
+		setShowModal(false);
+
+		try {
+			dispatch(deleteUserStart());
+
+			const res = await fetch(`/api/user/delete/${currentUser._id}`, {
+				method: "DELETE",
+			});
+			const data = await res.json();
+
+			if (!res.ok) dispatch(deleteUserFailure(data.message));
+			else dispatch(deleteUserSuccess());
+		} catch (error) {
+			dispatch(deleteUserFailure(error.message));
+		}
+	};
+
 	return (
 		<div className="max-w-lg mx-auto p-3 w-full ">
 			<h1 className="my-7 text-center font-semibold text-3xl">Profile</h1>
@@ -218,13 +241,54 @@ export const DashProfile = () => {
 			</form>
 
 			<div className=" text-rose-500 text-sm mt-5 flex justify-between">
-				<span className="cursor-pointer underline">Delete Account</span>
+				<span
+					className="cursor-pointer underline"
+					onClick={() => setShowModal(true)}
+				>
+					Delete Account
+				</span>
 				<span className="cursor-pointer flex gap-1 items-center underline">
 					Logout <IoLogOutOutline className="h-5 w-5" />
 				</span>
 			</div>
 
 			{updateUserError && <Error error={updateUserError} />}
+			{error && <Error error={error} />}
+
+			{/* Delete Modal */}
+			<Modal
+				show={showModal}
+				onClose={() => setShowModal(false)}
+				popup
+				size="md"
+			>
+				<Modal.Header />
+
+				<Modal.Body>
+					<div className="text-center ">
+						<HiOutlineExclamation className="h-12 w-12 text-slate-400 dark:text-slate-200 mb-3 mx-auto" />
+
+						<h3 className="text-base mb-5 text-slate-500 dark:text-slate-400">
+							Are you sure you want to delete your account?
+						</h3>
+
+						<div className="flex justify-center gap-4">
+							<button
+								onClick={handleDeleteUser}
+								className="bg-rose-500 hover:bg-rose-500/80 text-white rounded-lg px-3 py-2 text-sm font-medium"
+							>
+								Yes, I&apos;m sure
+							</button>
+							<button
+								onClick={() => setShowModal(false)}
+								className="bg-slate-500 hover:bg-slate-500/80 text-white rounded-lg px-3 py-2 text-sm font-medium"
+							>
+								No, cancel
+							</button>
+						</div>
+					</div>
+				</Modal.Body>
+			</Modal>
 		</div>
 	);
 };

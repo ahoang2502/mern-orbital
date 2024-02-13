@@ -14,6 +14,7 @@ import { useSelector, useDispatch } from "react-redux";
 import { Link, useLocation } from "react-router-dom";
 
 import { toggleTheme } from "../redux/theme/themeSlice";
+import { signoutSuccess } from "../redux/user/userSlice";
 
 export const Header = () => {
 	const path = useLocation().pathname;
@@ -21,6 +22,20 @@ export const Header = () => {
 	const dispatch = useDispatch();
 	const { currentUser } = useSelector((state) => state.user);
 	const { theme } = useSelector((state) => state.theme);
+
+	const handleSignout = async () => {
+		try {
+			const res = await fetch("/api/user/signout", {
+				method: "POST",
+			});
+			const data = await res.json();
+
+			if (!res.ok) console.log(data.message);
+			else dispatch(signoutSuccess());
+		} catch (error) {
+			console.log(error.message);
+		}
+	};
 
 	return (
 		<Navbar className="border-b-2">
@@ -64,7 +79,7 @@ export const Header = () => {
 						label={
 							<Avatar
 								alt="user-avatar"
-								img={currentUser.profilePicture}
+								img={currentUser.profilePicture || "../assets/avatar.png"}
 								rounded
 								className="h-8 w-10"
 							/>
@@ -83,12 +98,15 @@ export const Header = () => {
 
 						<Dropdown.Divider />
 
-						<DropdownItem>
-							<span className="flex justify-between w-full items-center">
+						<Dropdown.Item onClick={handleSignout}>
+							<span
+								className="flex justify-between w-full items-center"
+
+							>
 								Logout
 								<IoLogOutOutline className="h-5 w-5" />
 							</span>
-						</DropdownItem>
+						</Dropdown.Item>
 					</Dropdown>
 				) : (
 					<Link to="/sign-in">

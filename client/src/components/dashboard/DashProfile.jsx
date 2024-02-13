@@ -12,6 +12,7 @@ import { useSelector, useDispatch } from "react-redux";
 import { CircularProgressbar } from "react-circular-progressbar";
 import "react-circular-progressbar/dist/styles.css";
 import toast from "react-hot-toast";
+import { Link } from "react-router-dom";
 
 import { app } from "../../firebase";
 import { Error } from "../Error";
@@ -40,7 +41,7 @@ export const DashProfile = () => {
 	const filePickerRef = useRef();
 
 	const dispatch = useDispatch();
-	const { currentUser, error } = useSelector((state) => state.user);
+	const { currentUser, error, loading } = useSelector((state) => state.user);
 
 	const handleImageChange = (e) => {
 		const file = e.target.files[0];
@@ -250,9 +251,21 @@ export const DashProfile = () => {
 				<button
 					type="submit"
 					className="text-sm font-semibold bg-stone-800 hover:bg-stone-800/90 text-white dark:bg-slate-400 dark:hover:bg-slate-400/80 dark:text-slate-900 py-2.5 rounded-md "
+					disabled={loading || imageFileUploading}
 				>
-					Update
+					{loading || imageFileUploading ? "Loading..." : "Update"}
 				</button>
+
+				{currentUser.isAdmin && (
+					<Link to="/create-post">
+						<button
+							type="button"
+							className="text-sm font-semibold bg-white hover:bg-zinc-100 border-[1px] border-zinc-300 text-black dark:bg-slate-800 dark:hover:bg-slate-800/80 dark:text-white py-2.5 rounded-md w-full"
+						>
+							Create a post
+						</button>
+					</Link>
+				)}
 			</form>
 
 			<div className=" text-rose-500 text-sm mt-5 flex justify-between">

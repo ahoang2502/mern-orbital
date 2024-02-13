@@ -45,7 +45,10 @@ export const signin = async (req, res, next) => {
 		const isValidPassword = bcryptjs.compareSync(password, validUser.password);
 		if (!isValidPassword) return next(errorHandler(400, "Invalid credentials"));
 
-		const token = jwt.sign({ id: validUser._id }, process.env.JWT_SECRET);
+		const token = jwt.sign(
+			{ id: validUser._id, isAdmin: validUser.isAdmin },
+			process.env.JWT_SECRET
+		);
 
 		const { password: pass, ...rest } = validUser._doc;
 
@@ -60,14 +63,17 @@ export const signin = async (req, res, next) => {
 	}
 };
 
-// GOOGLE
+// GOOGLE SIGN-IN
 export const google = async (req, res, next) => {
 	const { email, name, googlePhotoUrl } = req.body;
 
 	try {
 		const user = await User.findOne({ email });
 		if (user) {
-			const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET);
+			const token = jwt.sign(
+				{ id: user._id, isAdmin: user.isAdmin },
+				process.env.JWT_SECRET
+			);
 			const { password, ...rest } = user._doc;
 
 			res
@@ -96,6 +102,7 @@ export const google = async (req, res, next) => {
 			const token = jwt.sign(
 				{
 					id: newUser._id,
+					isAdmin: newUser.isAdmin,
 				},
 				process.env.JWT_SECRET
 			);
